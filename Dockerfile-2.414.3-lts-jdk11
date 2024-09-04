@@ -1,0 +1,20 @@
+FROM jenkins/jenkins:2.414.3-lts-jdk11
+
+USER root
+RUN apt-get update && apt-get install -y lsb-release
+RUN curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc \
+  https://download.docker.com/linux/debian/gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) \
+  signed-by=/usr/share/keyrings/docker-archive-keyring.asc] \
+  https://download.docker.com/linux/debian \
+  $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+RUN apt-get update && apt-get install -y docker-ce-cli
+COPY ./opt/java/jdk-11.0.13+8 /opt/java/jdk-11.0.13+8
+COPY ./opt/java/jdk-11.0.18+10 /opt/java/jdk-11.0.18+10
+COPY ./opt/maven/apache-maven-3.9.1 /opt/maven/apache-maven-3.9.1
+COPY ./opt/maven/apache-maven-3.9.4 /opt/maven/apache-maven-3.9.4
+COPY ./opt/ant/apache-ant-1.10.9 /opt/ant/apache-ant-1.10.9
+COPY ./opt/ant/apache-ant-1.10.12 /opt/ant/apache-ant-1.10.12
+USER jenkins
+RUN jenkins-plugin-cli --plugins "blueocean docker-workflow"
+
